@@ -17,6 +17,8 @@
 mono_crash.*
 
 # Build results
+Migrations/
+wwwroot/lib/
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/
@@ -396,3 +398,5 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+/wwwroot/bootbox.js/bootbox.js
+/wwwroot/bootbox.js/bootbox.min.js
