@@ -1,0 +1,40 @@
+﻿@using TattooStudioBooking.Models
+@model Agenda
+@{
+    ViewData["Title"] = "Modificar agenda";
+}
+<div class="container pt-4">
+    <h5>Modificar agenda</h5>
+    <form asp-controller="Agenda" asp-action="Eliminar" asp-route-returnurl="@ViewData["ReturnUrl"]" method="get"
+        class="row g-3">
+        <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+        <input type="hidden" id="PuestoTrabajoId" name="PuestoTrabajoId" value="@ViewBag.PuestoTrabajoId" />
+        <div class="col-md-12">
+            <label for="Usuario" class="form-label">Usuario</label>
+            <input type="text" class="form-control" id="Usuario" readonly name="Usuario" value="@ViewBag.User">
+        </div>
+        <div class="col-md-6">
+            <label for="HoraDesde" class="form-label">Desde</label>
+            <input type="text" class="form-control" id="HoraDesde" readonly name="HoraDesde" value="@Model.HoraDesde">
+        </div>
+        <div class="col-md-6">
+            <label for="HoraHasta" class="form-label">Hasta</label>
+            <input type="text" class="form-control" id="HoraHasta" readonly name="HoraHasta" value="@Model.HoraHasta">
+        </div>
+        <div class="col-4">
+            <a href="/Agenda/Index" class="btn btn-primary">Volver</a>
+        </div>
+        <div class="col-4">
+            <button type="button" disabled class="btn btn-primary">Modificar</button>
+        </div>
+        <div class="col-4">
+            <button type="submit" class="btn btn-primary">Eliminar</button>
+        </div>
+    </form>
+</div>
+<script>
+    @if (ViewBag.ShowSuccessMsg == "Y")
+    {
+        @Html.Raw("$(document).ready(function () {bootbox.alert('Operación realizada con exito');});")
+    }
+</script>

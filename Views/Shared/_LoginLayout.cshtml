@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - TattooStudioBooking</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/loginSite.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/TattooStudioBooking.styles.css" asp-append-version="true" />
+</head>
+
+<body class="d-flex align-items-center py-4 bg-body-tertiary">
+    @*Modo claro o modo oscuro *@
+    @Html.Partial("~/Views/Shared/_SiteModes.cshtml")
+
+    <main class="form-signin w-100 m-auto">
+        @if (!Html.ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <strong>Error!</strong> @Html.ValidationSummary(false, "", new { @class = "" })
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+        @RenderBody()
+    </main>
+    
+    <script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/bootbox.js/bootbox.min.js"></script>
+    <script src="~/lib/jquery/jquery.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

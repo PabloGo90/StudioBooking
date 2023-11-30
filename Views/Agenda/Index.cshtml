@@ -1,0 +1,133 @@
+﻿@using TattooStudioBooking.Models
+@model List<Reserva>
+@{
+    ViewData["Title"] = "Agenda";
+}
+
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalReserva">
+Reserva</button>
+
+<div class="row">
+    <div class="table-responsive"> @* https://www.bootdey.com/snippets/view/time-table *@
+        <table class="table table-bordered text-center">
+            <thead>
+                <tr class="bg-light-gray">
+                    <th class="text-uppercase">Hora</th>
+                    <th class="text-uppercase">Lunes</th>
+                    <th class="text-uppercase">Martes</th>
+                    <th class="text-uppercase">Miercoles</th>
+                    <th class="text-uppercase">Jueves</th>
+                    <th class="text-uppercase">Viernes</th>
+                    <th class="text-uppercase">Sabado</th>
+                    <th class="text-uppercase">Domingo</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Bloque bloque in @ViewBag.bloques)
+                {
+                    <tr>
+                        <td class="align-middle">
+                            @string.Format("{0}:00",bloque.HoraDesdeStr)
+                        </td>
+                        @foreach (Reserva reserva in Model.Where(x => x.Bloque.Id == bloque.Id).OrderBy(x => x.FechaReserva))
+                        {
+                            @if(reserva.isReserva)
+                            {
+                                <td>
+                                    <span class="@string.Format("reserva-span {0} text-white font-size16 xs-font-size13", reserva.ColorReserva.ToString())">
+                                        @reserva.ReservaStr1
+                                    </span>
+                                    <div class="margin-10px-top font-size14">@reserva.ReservaStr2</div>
+                                    @if(ViewBag.User == reserva.ArtistaUserName)
+                                    {
+                                        <div class="font-size13">
+                                            <a href="@string.Format("/Agenda/Actualizar?Id={0}&PuestoTrabajoId={1}", reserva.AgendaId, ViewBag.PuestoTrabajoId)">
+                                            Actualizar
+                                            </a>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                         <div class="font-size13 text-light-gray">@reserva.ReservaStr3</div>
+                                    }
+                                </td>
+                            }
+                            else
+                            {                                
+                                <td class="disponible"></td>
+                            }
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+@* MODAL REGISTRA AGENDA *@
+<div class="modal fade" id="modalReserva" tabindex="-1" aria-labelledby="reservaModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="reservaModalLabel">Reserva agenda</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form asp-controller="Agenda" id="formReserva" asp-action="RegistrarAgenda" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="row g-3">
+            <input type="hidden" id="PuestoTrabajoId" name="PuestoTrabajoId" value="@ViewBag.PuestoTrabajoId" />
+            <div class="col-md-12">
+                <label for="Usuario" class="form-label">Usuario</label>
+                <input type="text" class="form-control" id="Usuario" readonly name="Usuario" value="@ViewBag.User">
+            </div>
+            <div class="col-md-6">
+                <label for="HoraDesde" class="form-label">Desde</label>
+                <select class="form-select" id="HoraDesde" name="HoraDesde" aria-label=""Default select example"">
+                    <option selected>Seleccione</option>
+                    @foreach (Bloque bloque in @ViewBag.bloques)
+                    {
+                        <option value="@bloque.HoraDesde">@(String.Format("{0} - desde las {1}",bloque.Nombre, bloque.HoraDesdeStr))</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="HoraHasta" class="form-label">Hasta</label>
+                <select class="form-select" id="HoraHasta" name="HoraHasta" aria-label="">
+                    <option selected>Seleccione</option>
+                    @foreach (Bloque bloque in @ViewBag.bloques)
+                    {
+                        <option value="@bloque.HoraHasta">@(String.Format("{0} - hasta las {1}",bloque.Nombre, bloque.HoraHastaStr))</option>
+                    }
+                </select>
+            </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary"  onclick="RegistrarAgenda()">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        RegistrarAgenda = function () {
+            $('form#formReserva').submit();
+            @* bootbox.confirm({
+                message: '¿Crear reserva?',
+                buttons: {
+                    confirm: {
+                        label: 'Si',
+                    },
+                    cancel: {
+                        label: 'Cancelar',
+                    }
+                },
+                callback: function (result) {
+                    if (result) {
+                        $('form#formReserva').submit();
+                    }
+                }
+            }); *@
+        }
+    });
+</script>

@@ -1,0 +1,23 @@
+﻿@using TattooStudioBooking.Models
+@model List<PuestoTrabajo>
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="row">
+    @foreach (PuestoTrabajo pto in Model)
+    {
+        <div class="col-6">
+            <div class="card text-center mb-3">
+                @* <img src="@string.Format("{0}/Content/img/{1}", ViewBag.BaseUrl, mod.Img)" class="card-img-top p-5"
+                    title="@mod.Nombre" /> *@
+                <div class="card-body">
+                    <h5 class="card-title">@pto.Nombre</h5>
+                    <p class="card-text" style="height:50px;">Hacer clic para agendar</p>
+                    <a href="@string.Format("/Agenda/Index?Id={0}", pto.Id)"
+                        class="btn btn-primary custColor">Ver agenda</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

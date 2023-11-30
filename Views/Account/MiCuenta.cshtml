@@ -1,0 +1,62 @@
+﻿@using TattooStudioBooking.Models
+@model Artista
+@{
+    ViewData["Title"] = "Mi cuenta";
+}
+<div class="container pt-4">
+    <h5>Actualizar información usuario</h5>
+    <form asp-controller="Account" asp-action="MiCuenta" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="row g-3">
+        <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+        <div class="col-md-6">
+            <label for="Nombre" class="form-label">Nombre completo</label>
+            <input type="text" class="form-control" id="Nombre" onkeypress="return ValObservac(event);" name="Nombre"
+                pattern="[ a-zA-ZáéíóúÁÉÍÓÚñÑ]{1,50}" data-bs-toggle="tooltip"
+                data-bs-title="Ingrese sólo letras (largo max. 50)" value="@Model.Nombre">
+        </div>
+        <div class="col-md-6">
+            <label for="UserName" class="form-label">Nombre usuario</label>
+            <input type="text" readonly class="form-control" id="UserName" name="UserName" value="@Model.UserName">
+        </div>
+        <div class="col-md-6">
+            <label for="Instagram" class="form-label">Instagram</label>
+            <input type="text" class="form-control" id="Instagram" onkeypress="return ValObservac(event);"
+                name="Instagram" placeholder=""
+                data-bs-toggle="tooltip"
+                data-bs-title="@Html.Raw("Instagram, Ej: @usuario. El largo debe ser entre 8 y 50 caracteres.")"
+                value="@Model.Instagram">
+        </div>
+        <div class="col-md-6">
+            <label for="Password" class="form-label">Contraseña Actual</label>
+            <input type="password" class="form-control" onkeypress="return ValPassword(event);"
+                autocomplete="new-password"
+                @* pattern="@Html.Raw("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[$@$!$.$#% *? &amp;])([A-Za-z\\d$@$!$.$#% *? &amp;]|[^ ]){8,15}$")" *@
+                data-bs-toggle="tooltip"
+                data-bs-title="@Html.Raw("Contraseña debe contener letras (mayúsculas, minúsculas), números y al menos un caracter especial (@ . _ - ! # % & *) (largo mínimo 8 y máximo 15 caracteres)")"
+                id="Password" name="Password">
+        </div>
+        <div class="col-md-6">
+            <label for="Password2" class="form-label">Nueva contraseña</label>
+            <input type="password" class="form-control" id="Password2" name="Password2" autocomplete="new-password">
+        </div>      
+        <div class="col-md-6">
+            <label for="Password3" class="form-label">Confirmar contraseña</label>
+            <input type="password" class="form-control" id="Password3" name="Password3" autocomplete="new-password">
+        </div>      
+        <div class="col-3">
+            <a href="/Home/Index" class="btn btn-primary">Volver</a>
+        </div>
+        <div class="col-9">
+            <button type="submit" class="btn btn-primary">Actualizar</button>
+        </div>
+    </form>
+</div>
+<script>
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+</script>
+<script>
+    @if (ViewBag.ShowSuccessMsg == "Y")
+    {
+        @Html.Raw("$(document).ready(function () {bootbox.alert('Operación realizada con exito');});")
+    }
+</script>
