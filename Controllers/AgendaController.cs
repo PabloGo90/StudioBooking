@@ -138,4 +138,21 @@ public class AgendaController : Controller
         }
         return RedirectToAction("Index", "Agenda", new { id = PuestoTrabajoId });
     }
+    
+    [HttpGet]
+    [Authorize(Roles = "Admin")]
+    public IActionResult Listar()
+    {                                    
+        return View(_context.Agendas.Include(art => art.Artista)
+                                    .Include(pto => pto.PuestoTrabajo)
+                                    .Select(x => new Reserva {
+                                        AgendaId = x.Id,
+                                        ArtistaId = x.Artista.Id,
+                                        ArtistaUserName = x.Artista.UserName,
+                                        PuestoTrabajoId = x.PuestoTrabajo.Id,
+                                        FechaReserva = x.FechaReserva,
+                                        Bloque = new Bloque(){HoraDesde = x.HoraDesde, HoraHasta = x.HoraHasta}
+                                    }).ToList());
+
+    }
 }
