@@ -127,6 +127,59 @@ public class AccountController : Controller
         return View(artista);
     }
 
+    [HttpGet]
+    [Authorize(Roles = "Admin")]
+    public IActionResult MiCuentaAdmin()
+    {
+        if (User.Identity == null)
+        {
+            ModelState.AddModelError("", "No se encontro user logeado");
+            return View(new Admin());
+        }
+        else
+            return View(_context.Admins.FirstOrDefault(x => x.UserName == User.Identity.Name));
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> MiCuentaAdmin(Admin admin)
+    {
+        string pwd = string.Empty;
+        try
+        {
+            //Valida contraseña
+            pwd = (_context.Admins.AsNoTracking().FirstOrDefault(x => x.Id == admin.Id) ?? new Admin()).Password;
+            if (string.IsNullOrEmpty(pwd) || admin.Password != pwd)
+            {
+                ModelState.AddModelError("", "Contraseña incorrecta");
+                return View(admin);
+            }
+
+            //Cambio de contraseña
+            if (!string.IsNullOrEmpty(admin.Password2))
+            {
+                if (admin.Password2 != admin.Password3)
+                {
+                    ModelState.AddModelError("", "Contraseña nueva no coincide con confirmación de contraseña");
+                    return View(admin);
+                }
+                else
+                    admin.Password = admin.Password2;
+            }
+
+            //update
+            _context.Entry(admin).State = EntityState.Modified;
+
+            await _context.SaveChangesAsync();
+            ViewBag.ShowSuccessMsg = "Y";
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError("", ex.Message);
+        }
+
+        return View(admin);
+    }
     public IActionResult AccessDenied(string? returnUrl = null)
     {
         return View();

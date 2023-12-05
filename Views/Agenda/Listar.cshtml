@@ -1,0 +1,38 @@
+@using TattooStudioBooking.Models
+@model List<Reserva>
+@{
+    ViewData["Title"] = "Lista Agenda";
+}
+
+
+<div class="row">
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Id Agenda</th>
+                    <th>Id Artista</th>
+                    <th>Artista UserName</th>
+                    <th>Id Puesto trabajo</th>
+                    <th>Fecha Reserva</th>
+                    <th>Desde</th>
+                    <th>Hasta</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Reserva reserva in Model)
+                {
+                    <tr>
+                        <td>@reserva.AgendaId</td>
+                        <td>@reserva.ArtistaId</td>
+                        <td>@reserva.ArtistaUserName</td>
+                        <td>@reserva.PuestoTrabajoId</td>
+                        <td>@reserva.FechaReserva</td>
+                        <td>@string.Format("{0}:00",reserva.Bloque.HoraDesdeStr)</td>
+                        <td>@string.Format("{0}:00",reserva.Bloque.HoraHastaStr)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
