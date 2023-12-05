@@ -11,23 +11,19 @@
 </head>
 
 <body>
+    <script src="~/lib/jquery/jquery.min.js"></script>
     <script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="~/bootbox.js/bootbox.min.js"></script>
-    <script src="~/lib/jquery/jquery.min.js"></script>
     @*<script src="~/lib/color-modes.js"></script>
     <script src="~/lib/respond.js"></script>*@
     <script src="~/js/site.js" asp-append-version="true"></script>
 
-    @* Modo claro o modo oscuro*@
-    @Html.Partial("~/Views/Shared/_SiteModes.cshtml")
-    @*Iconos bootstrap*@
-    @Html.Partial("~/Views/Shared/_SiteIcons.cshtml")
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">TattooStudioBooking</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
-                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
@@ -37,21 +33,21 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home"
-                                asp-action="Privacy">Privacy</a>
+                               asp-action="Privacy">Privacy</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home"
-                                asp-action="MyClaims">MyClaims</a>
+                               asp-action="MyClaims">MyClaims</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Account"
-                                asp-action="MiCuenta">Mi Cuenta</a>
+                               asp-action="MiCuenta">Mi Cuenta</a>
                         </li>
                         @if (User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Account"
-                                    asp-action="Logout">Logout</a>
+                                   asp-action="Logout">Logout</a>
                             </li>
                         }
                     </ul>
@@ -69,6 +65,14 @@
                 </div>
             }
             @RenderBody()
+
+            <script>
+                @if (ViewBag.ShowSuccessMsg == "Y")
+                {
+                    @Html.Raw("$(document).ready(function () {bootbox.alert('Operación realizada con exito');});")
+                }
+            </script>
+
         </main>
     </div>
 

@@ -14,8 +14,10 @@
                 <div class="card-body">
                     <h5 class="card-title">@pto.Nombre</h5>
                     <p class="card-text" style="height:50px;">Hacer clic para agendar</p>
-                    <a href="@string.Format("/Agenda/Index?Id={0}", pto.Id)"
-                        class="btn btn-primary custColor">Ver agenda</a>
+                    @*<a href="@string.Format("/Agenda/Index?ptoId={0}", pto.Id)" class="btn btn-primary">Ver agenda</a>*@
+                    <a class="btn btn-primary" asp-area="" asp-controller="Agenda" asp-action="Index" asp-route-ptoId="@pto.Id">
+                        Ver agenda
+                    </a>
                 </div>
             </div>
         </div>

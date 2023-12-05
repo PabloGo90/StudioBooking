@@ -11,9 +11,6 @@
 </head>
 
 <body class="d-flex align-items-center py-4 bg-body-tertiary">
-    @*Modo claro o modo oscuro *@
-    @Html.Partial("~/Views/Shared/_SiteModes.cshtml")
-
     <main class="form-signin w-100 m-auto">
         @if (!Html.ViewData.ModelState.IsValid)
         {
@@ -24,10 +21,10 @@
         }
         @RenderBody()
     </main>
-    
+
+    <script src="~/lib/jquery/jquery.min.js"></script>
     <script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="~/bootbox.js/bootbox.min.js"></script>
-    <script src="~/lib/jquery/jquery.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

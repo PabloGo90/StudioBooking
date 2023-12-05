@@ -8,7 +8,8 @@
     <form asp-controller="Agenda" asp-action="Eliminar" asp-route-returnurl="@ViewData["ReturnUrl"]" method="get"
         class="row g-3">
         <input type="hidden" id="Id" name="Id" value="@Model.Id" />
-        <input type="hidden" id="PuestoTrabajoId" name="PuestoTrabajoId" value="@ViewBag.PuestoTrabajoId" />
+        <input type="hidden" id="ptoId" name="ptoId" value="@ViewBag.ptoId" />                  
+
         <div class="col-md-12">
             <label for="Usuario" class="form-label">Usuario</label>
             <input type="text" class="form-control" id="Usuario" readonly name="Usuario" value="@ViewBag.User">
@@ -32,9 +33,3 @@
         </div>
     </form>
 </div>
-<script>
-    @if (ViewBag.ShowSuccessMsg == "Y")
-    {
-        @Html.Raw("$(document).ready(function () {bootbox.alert('Operación realizada con exito');});")
-    }
-</script>

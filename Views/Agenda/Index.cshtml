@@ -4,11 +4,29 @@
     ViewData["Title"] = "Agenda";
 }
 
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalReserva">
-Reserva</button>
-
+<div class="row mb-3">
+    <h2>
+        @string.Format("Agenda semana del {0} al {1}",
+        (Model.OrderBy(x => x.FechaReserva).FirstOrDefault() ?? new Reserva()).FechaReserva.ToString("dd-MM"),
+        (Model.OrderByDescending(x => x.FechaReserva).FirstOrDefault() ?? new Reserva()).FechaReserva.ToString("dd-MM"))
+    </h2>
+    <div class="col-6 text-start">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalReserva">
+            Crear Reserva
+        </button>
+    </div>
+    <div class="col-3 text-end">
+        <a class="btn btn-secondary" role="button" asp-area="" asp-controller="Agenda" asp-action="Index"
+           asp-route-ptoId="@ViewBag.ptoId" asp-route-semanaIdx="@ViewBag.semanaAntIdx">Semana anterior</a>
+    </div>
+    <div class="col-3 text-start">
+        <a class="btn btn-secondary" role="button" asp-area="" asp-controller="Agenda" asp-action="Index"
+           asp-route-ptoId="@ViewBag.ptoId" asp-route-semanaIdx="@ViewBag.semanaSigIdx">Semana siguiente</a>
+    </div>
+</div>
 <div class="row">
-    <div class="table-responsive"> @* https://www.bootdey.com/snippets/view/time-table *@
+    <div class="table-responsive">
+        @* https://www.bootdey.com/snippets/view/time-table *@
         <table class="table table-bordered text-center">
             <thead>
                 <tr class="bg-light-gray">
@@ -31,29 +49,31 @@ Reserva</button>
                         </td>
                         @foreach (Reserva reserva in Model.Where(x => x.Bloque.Id == bloque.Id).OrderBy(x => x.FechaReserva))
                         {
-                            @if(reserva.isReserva)
+                            @if (reserva.isReserva)
                             {
                                 <td>
                                     <span class="@string.Format("reserva-span {0} text-white font-size16 xs-font-size13", reserva.ColorReserva.ToString())">
                                         @reserva.ReservaStr1
                                     </span>
                                     <div class="margin-10px-top font-size14">@reserva.ReservaStr2</div>
-                                    @if(ViewBag.User == reserva.ArtistaUserName)
+                                    @if (ViewBag.User == reserva.ArtistaUserName)
                                     {
                                         <div class="font-size13">
-                                            <a href="@string.Format("/Agenda/Actualizar?Id={0}&PuestoTrabajoId={1}", reserva.AgendaId, ViewBag.PuestoTrabajoId)">
-                                            Actualizar
+                                            @*<a href="@string.Format("/Agenda/Actualizar?Id={0}&ptoId={1}", reserva.AgendaId, ViewBag.ptoId)">*@
+                                            <a asp-area="" asp-controller="Agenda" asp-action="Actualizar" asp-route-id="reserva.AgendaId"
+                                               asp-route-ptoId="@ViewBag.ptoId">
+                                                Actualizar
                                             </a>
                                         </div>
                                     }
                                     else
                                     {
-                                         <div class="font-size13 text-light-gray">@reserva.ReservaStr3</div>
+                                        <div class="font-size13 text-light-gray">@reserva.ReservaStr3</div>
                                     }
                                 </td>
                             }
                             else
-                            {                                
+                            {
                                 <td class="disponible"></td>
                             }
                         }
@@ -65,54 +85,64 @@ Reserva</button>
 </div>
 @* MODAL REGISTRA AGENDA *@
 <div class="modal fade" id="modalReserva" tabindex="-1" aria-labelledby="reservaModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="reservaModalLabel">Reserva agenda</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form asp-controller="Agenda" id="formReserva" asp-action="RegistrarAgenda" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="row g-3">
-            <input type="hidden" id="PuestoTrabajoId" name="PuestoTrabajoId" value="@ViewBag.PuestoTrabajoId" />
-            <div class="col-md-12">
-                <label for="Usuario" class="form-label">Usuario</label>
-                <input type="text" class="form-control" id="Usuario" readonly name="Usuario" value="@ViewBag.User">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="reservaModalLabel">Reserva agenda</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="col-md-6">
-                <label for="HoraDesde" class="form-label">Desde</label>
-                <select class="form-select" id="HoraDesde" name="HoraDesde" aria-label=""Default select example"">
-                    <option selected>Seleccione</option>
-                    @foreach (Bloque bloque in @ViewBag.bloques)
-                    {
-                        <option value="@bloque.HoraDesde">@(String.Format("{0} - desde las {1}",bloque.Nombre, bloque.HoraDesdeStr))</option>
-                    }
-                </select>
+            <div class="modal-body">
+                <form asp-controller="Agenda" id="formReserva" asp-action="RegistrarAgenda" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="row g-3">
+                    <input type="hidden" id="ptoId" name="ptoId" value="@ViewBag.ptoId" />
+                    <input type="hidden" id="semanaIdx" name="semanaIdx" value="@ViewBag.semanaIdx" />
+                    <div class="col-md-12">
+                        <label for="Usuario" class="form-label">Usuario</label>
+                        <input type="text" class="form-control" id="Usuario" readonly name="reserva.Usuario" value="@ViewBag.User">
+                    </div>
+                    <div class="col-md-12">
+                        <label for="fecha">Fecha</label>
+                        <input id="fecha" class="form-control" type="date" name="reserva.fecha" value="@ViewBag.fechaactual" placeholder="dd-mm-yyyy" />
+                    </div>
+                    <div class="col-md-6">
+                        <label for="HoraDesde" class="form-label">Desde</label>
+                        <select class="form-select" id="HoraDesde" name="reserva.HoraDesde" aria-label="" Default select example"">
+                            <option selected>Seleccione</option>
+                            @foreach (Bloque bloque in @ViewBag.bloques)
+                            {
+                                <option value="@bloque.HoraDesde">@(String.Format("{0} - desde las {1}", bloque.Nombre, bloque.HoraDesdeStr))</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="HoraHasta" class="form-label">Hasta</label>
+                        <select class="form-select" id="HoraHasta" name="reserva.HoraHasta" aria-label="">
+                            <option selected>Seleccione</option>
+                            @foreach (Bloque bloque in @ViewBag.bloques)
+                            {
+                                <option value="@bloque.HoraHasta">@(String.Format("{0} - hasta las {1}", bloque.Nombre, bloque.HoraHastaStr))</option>
+                            }
+                        </select>
+                    </div>
+                </form>
             </div>
-            <div class="col-md-6">
-                <label for="HoraHasta" class="form-label">Hasta</label>
-                <select class="form-select" id="HoraHasta" name="HoraHasta" aria-label="">
-                    <option selected>Seleccione</option>
-                    @foreach (Bloque bloque in @ViewBag.bloques)
-                    {
-                        <option value="@bloque.HoraHasta">@(String.Format("{0} - hasta las {1}",bloque.Nombre, bloque.HoraHastaStr))</option>
-                    }
-                </select>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" onclick="RegistrarAgenda()">Crear reserva</button>
             </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary"  onclick="RegistrarAgenda()">Save changes</button>
-      </div>
+        </div>
     </div>
-  </div>
 </div>
 
 <script>
     $(document).ready(function () {
+        //todo https://stackoverflow.com/questions/45428046/changing-input-date-data-type-to-dd-mm-yyyy-instead-of-mm-dd-yyyy-with-require se debe agregar algo de jquery
+        //$('#fecha').datepicker({ dateFormat: 'dd-mm-yyyy' }).val();
+
+
         RegistrarAgenda = function () {
-            $('form#formReserva').submit();
-            @* bootbox.confirm({
+            $('#modalReserva').modal('hide');
+
+            bootbox.confirm({
                 message: '¿Crear reserva?',
                 buttons: {
                     confirm: {
@@ -127,7 +157,7 @@ Reserva</button>
                         $('form#formReserva').submit();
                     }
                 }
-            }); *@
+            });
         }
     });
 </script>
