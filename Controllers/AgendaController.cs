@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +20,11 @@ public class AgendaController : Controller
     public IActionResult Index(int ptoId, int semanaIdx = 0)
     {
         return View(ObtenerReservas(ptoId, semanaIdx));
+    }
+    [Authorize]
+    public IActionResult RegistrarAgenda(int ptoId, int semanaIdx = 0)
+    {
+        return View("Index", ObtenerReservas(ptoId, semanaIdx));
     }
     [HttpPost]
     [Authorize(Roles = "Artista")]
@@ -46,6 +51,12 @@ public class AgendaController : Controller
                 ModelState.AddModelError("", $"No se encontro puesto de trabajo {ptoId}");
                 return View("Index", ObtenerReservas(ptoId, semanaIdx));
             }
+            if (!this.ValidarReserva(reserva, ptoId))
+            {
+                ModelState.AddModelError("", $"Puesto ya esta reservado para ese bloque");
+                return View("Index", ObtenerReservas(ptoId, semanaIdx));
+            }
+
             _context.Agendas.Add(new Agenda()
             {
                 PuestoTrabajo = puestoTrabajo,
@@ -116,6 +127,35 @@ public class AgendaController : Controller
         }
     }
 
+    [HttpGet]
+    [Authorize(Roles = "Admin")]
+    public IActionResult Listar(DateTime? fechaini = null, DateTime? fechafin = null)
+    {
+        if (fechaini == null)
+            fechaini = DateTime.Now.Date;
+        if (fechafin == null)
+            fechafin = fechaini;
+
+        ViewBag.fechaini = (fechaini ?? DateTime.Now.Date).ToString("yyyy-MM-dd");
+        ViewBag.fechafin = (fechafin ?? DateTime.Now.Date).ToString("yyyy-MM-dd");
+
+        return View(_context.Agendas.Where(w => w.FechaReserva >= fechaini && w.FechaReserva <= fechafin)
+                                    .Include(art => art.Artista)
+                                    .Include(pto => pto.PuestoTrabajo)
+                                    .Select(x => new Reserva
+                                    {
+                                        AgendaId = x.Id,
+                                        ArtistaId = x.Artista.Id,
+                                        ArtistaUserName = x.Artista.UserName,
+                                        PuestoTrabajoId = x.PuestoTrabajo.Id,
+                                        FechaReserva = x.FechaReserva,
+                                        Bloque = new Bloque() { HoraDesde = x.HoraDesde, HoraHasta = x.HoraHasta }
+                                    })
+                                    .OrderBy(o => o.FechaReserva)
+                                    .ThenBy(o => o.Bloque.HoraDesde)
+                                    .ToList());
+
+    }
     private List<Reserva> ObtenerReservas(int ptoId, int semanaIdx)
     {
 
@@ -132,8 +172,8 @@ public class AgendaController : Controller
             {
                 var agenda = _context.Agendas.Include(pto => pto.PuestoTrabajo)
                                              .Include(art => art.Artista)
-                                             .Where(x => x.FechaReserva == diaInicio && x.PuestoTrabajo.Id == ptoId &&
-                                                         bloque.HoraDesde >= x.HoraDesde && bloque.HoraDesde <= x.HoraHasta).FirstOrDefault();
+                                             .FirstOrDefault(x => x.FechaReserva == diaInicio && x.PuestoTrabajo.Id == ptoId &&
+                                                         bloque.HoraDesde >= x.HoraDesde && bloque.HoraDesde < x.HoraHasta);
 
 
                 if (agenda != null)
@@ -146,9 +186,9 @@ public class AgendaController : Controller
                         ArtistaUserName = agenda.Artista.UserName,
                         AgendaId = agenda.Id,
                         isReserva = true,
-                        ReservaStr1 = agenda.Artista.Instagram,
-                        ReservaStr2 = $"en {agenda.PuestoTrabajo.Nombre}",
-                        ReservaStr3 = $"Reserva de {agenda.Artista.Nombre}"
+                        ReservaStr1 = agenda.Artista.UserName,
+                        ReservaStr3 = $"Reservado"
+                        // ReservaStr2 = agenda.Artista.Instagram
                     });
                 else
                     reservas.Add(new Reserva { Bloque = bloque, FechaReserva = diaInicio, PuestoTrabajoId = ptoId });
@@ -157,31 +197,26 @@ public class AgendaController : Controller
 
             diaInicio = diaInicio.AddDays(1);
         }
-;
+
         ViewBag.bloques = bloques;
         ViewBag.ptoId = ptoId;
         ViewBag.semanaIdx = semanaIdx;
-        ViewBag.semanaAntIdx = semanaIdx-1;
-        ViewBag.semanaSigIdx = semanaIdx+1;
+        ViewBag.semanaAntIdx = semanaIdx - 1;
+        ViewBag.semanaSigIdx = semanaIdx + 1;
         ViewBag.fechaactual = hoy.ToString("yyyy-MM-dd");
         ViewBag.User = User.Identity == null ? "" : User.Identity.Name;
         return reservas;
     }
-    
-    [HttpGet]
-    [Authorize(Roles = "Admin")]
-    public IActionResult Listar()
-    {                                    
-        return View(_context.Agendas.Include(art => art.Artista)
-                                    .Include(pto => pto.PuestoTrabajo)
-                                    .Select(x => new Reserva {
-                                        AgendaId = x.Id,
-                                        ArtistaId = x.Artista.Id,
-                                        ArtistaUserName = x.Artista.UserName,
-                                        PuestoTrabajoId = x.PuestoTrabajo.Id,
-                                        FechaReserva = x.FechaReserva,
-                                        Bloque = new Bloque(){HoraDesde = x.HoraDesde, HoraHasta = x.HoraHasta}
-                                    }).ToList());
 
+    private bool ValidarReserva(CrearReserva reserva, int ptoId)
+    {
+        List<int> horas = new List<int>();
+        foreach (Agenda agenda in _context.Agendas.AsNoTracking().Where(x => x.FechaReserva == reserva.fecha && x.PuestoTrabajo.Id == ptoId))
+        {
+            for (int i = agenda.HoraDesde; i < agenda.HoraHasta; i++)
+                horas.Add(i);
+        }
+
+        return !horas.Exists(h => h == reserva.HoraDesde || h == reserva.HoraHasta - 1);
     }
 }
