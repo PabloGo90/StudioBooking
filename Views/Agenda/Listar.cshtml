@@ -4,7 +4,23 @@
     ViewData["Title"] = "Lista Agenda";
 }
 
-
+<div class="row g-3 mb-3">
+    <form asp-controller="Agenda" id="formListar" asp-action="Listar" method="get" class="row g-3">
+        <div class="col-md-6">
+            <label for="fechaini">Fecha desde</label>
+            <input id="fechaini" class="form-control" type="date" name="fechaini" value="@ViewBag.fechaini"
+                placeholder="dd-mm-yyyy" />
+        </div>
+        <div class="col-md-6">
+            <label for="fechafin">Fecha hasta</label>
+            <input id="fechafin" class="form-control" type="date" name="fechafin" value="@ViewBag.fechafin"
+                placeholder="dd-mm-yyyy" />
+        </div>
+        <div class="col-md-6">
+            <button type="submit" class="btn btn-primary">Buscar</button>
+        </div>
+    </form>
+</div>
 <div class="row">
     <div class="table-responsive">
         <table class="table table-bordered">
@@ -21,6 +37,7 @@
             </thead>
             <tbody>
                 @foreach (Reserva reserva in Model)
+
                 {
                     <tr>
                         <td>@reserva.AgendaId</td>
@@ -28,8 +45,8 @@
                         <td>@reserva.ArtistaUserName</td>
                         <td>@reserva.PuestoTrabajoId</td>
                         <td>@reserva.FechaReserva</td>
-                        <td>@string.Format("{0}:00",reserva.Bloque.HoraDesdeStr)</td>
-                        <td>@string.Format("{0}:00",reserva.Bloque.HoraHastaStr)</td>
+                        <td>@string.Format("{0}:00", reserva.Bloque.HoraDesdeStr)</td>
+                        <td>@string.Format("{0}:00", reserva.Bloque.HoraHastaStr)</td>
                     </tr>
                 }
             </tbody>
