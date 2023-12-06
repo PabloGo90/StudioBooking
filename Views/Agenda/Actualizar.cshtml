@@ -22,14 +22,14 @@
             <label for="HoraHasta" class="form-label">Hasta</label>
             <input type="text" class="form-control" id="HoraHasta" readonly name="HoraHasta" value="@Model.HoraHasta">
         </div>
-        <div class="col-4">
-            <a href="/Agenda/Index" class="btn btn-primary">Volver</a>
+        <div class="col-4">            
+            <a class="btn btn-primary" asp-area="" asp-controller="Agenda" asp-action="Index" asp-route-ptoId="@ViewBag.ptoId">Volver</a>
         </div>
         <div class="col-4">
             <button type="button" disabled class="btn btn-primary">Modificar</button>
         </div>
         <div class="col-4">
-            <button type="submit" class="btn btn-primary">Eliminar</button>
+            <button type="submit" @(Model.Id == 0 ? "disabled" : "") class="btn btn-primary">Eliminar</button>
         </div>
     </form>
 </div>
