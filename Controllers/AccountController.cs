@@ -1,4 +1,4 @@
-﻿
+
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TattooStudioBooking.Models;
+using TattooStudioBooking.Helpers;
 using Microsoft.EntityFrameworkCore;
 namespace TattooStudioBooking;
 
@@ -29,7 +30,7 @@ public class AccountController : Controller
     private bool ValidateLogin(string userName, string password, out Usuario usuario)
     {
         //verifica bd
-        _context.Database.EnsureCreated();
+        // _context.Database.EnsureCreated();
 
         usuario = (Usuario)(_context.Artistas.FirstOrDefault(x => x.UserName == userName) ?? new Usuario());
 
@@ -69,6 +70,8 @@ public class AccountController : Controller
                 return Redirect("/");
             }
         }
+        else
+            ModelState.AddModelError("", "Usuario o Contraseña incorrecta");
 
         return View();
     }
