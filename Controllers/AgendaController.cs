@@ -102,7 +102,7 @@ public class AgendaController : Controller
                 ViewBag.ShowSuccessMsg = "Y";
             }
         }
-        return View("Actualizar", new { id = id, ptoId = ptoId });
+        return View("Actualizar", new Agenda());
 
     }
 
