@@ -60,7 +60,7 @@
                                     {
                                         <div class="font-size13">
                                             @*<a href="@string.Format("/Agenda/Actualizar?Id={0}&ptoId={1}", reserva.AgendaId, ViewBag.ptoId)">*@
-                                            <a asp-area="" asp-controller="Agenda" asp-action="Actualizar" asp-route-id="reserva.AgendaId"
+                                            <a asp-area="" asp-controller="Agenda" asp-action="Actualizar" asp-route-id="@reserva.AgendaId"
                                                asp-route-ptoId="@ViewBag.ptoId">
                                                 Actualizar
                                             </a>
