@@ -62,48 +62,58 @@ public class AgendaController : Controller
     [Authorize]
     public IActionResult Actualizar(int id, int ptoId)
     {
-        Agenda? agenda = _context.Agendas.Include(art => art.Artista)
-                                        .AsNoTracking()
-                                        .FirstOrDefault(x => x.Id == id);
-        if (agenda == null)
+        try
         {
-            ModelState.AddModelError("", "Agenda no encontrada");
-            return View(new Agenda());
+            Agenda? agenda = _context.Agendas.Include(art => art.Artista)
+                                            .AsNoTracking()
+                                            .FirstOrDefault(x => x.Id == id);
+            if (agenda == null)
+            {
+                ModelState.AddModelError("", "Agenda no encontrada");
+                return View(new Agenda());
+            }
+            if (User.Identity == null || User.Identity.Name != agenda.Artista.UserName)
+            {
+                ModelState.AddModelError("", "Usuario no logeado o distinto a usuario agenda"); ;
+                return View(new Agenda());
+            }
+            return View(agenda);
         }
-        if (User.Identity == null || User.Identity.Name != agenda.Artista.UserName)
+        finally
         {
-            ModelState.AddModelError("", "Usuario no logeado o distinto a usuario agenda"); ;
-            return View(new Agenda());
+            ViewBag.ptoId = ptoId;
+            ViewBag.User = User.Identity == null ? "" : User.Identity.Name;
         }
-
-        ViewBag.ptoId = ptoId;
-        ViewBag.User = User.Identity == null ? "" : User.Identity.Name;
-
-        return View(agenda);
     }
     [HttpGet]
     [Authorize(Roles = "Artista")]
     public async Task<IActionResult> Eliminar(int id, int ptoId)
     {
-
-        if (ModelState.IsValid)
+        try
         {
-            Agenda? agenda = _context.Agendas.Include(art => art.Artista)
-                                    .FirstOrDefault(x => x.Id == id);
-            if (agenda == null)
-                ModelState.AddModelError("", "Agenda no encontrada");
-
-            else if (User.Identity == null || User.Identity.Name != agenda.Artista.UserName)
-                ModelState.AddModelError("", "Usuario no logeado o distinto a usuario agenda");
-            else
+            if (ModelState.IsValid)
             {
-                _context.Remove(agenda);
-                await _context.SaveChangesAsync();
-                ViewBag.ShowSuccessMsg = "Y";
-            }
-        }
-        return View("Actualizar", new Agenda());
+                Agenda? agenda = _context.Agendas.Include(art => art.Artista)
+                                        .FirstOrDefault(x => x.Id == id);
+                if (agenda == null)
+                    ModelState.AddModelError("", "Agenda no encontrada");
 
+                else if (User.Identity == null || User.Identity.Name != agenda.Artista.UserName)
+                    ModelState.AddModelError("", "Usuario no logeado o distinto a usuario agenda");
+                else
+                {
+                    _context.Remove(agenda);
+                    await _context.SaveChangesAsync();
+                    ViewBag.ShowSuccessMsg = "Y";
+                }
+            }
+            return View("Actualizar", new Agenda());
+        }
+        finally
+        {
+            ViewBag.ptoId = ptoId;
+            ViewBag.User = User.Identity == null ? "" : User.Identity.Name;
+        }
     }
 
     private List<Reserva> ObtenerReservas(int ptoId, int semanaIdx)
