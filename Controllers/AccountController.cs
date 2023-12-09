@@ -30,7 +30,7 @@ public class AccountController : Controller
     private bool ValidateLogin(string userName, string password, out Usuario usuario)
     {
         //verifica bd
-        // _context.Database.EnsureCreated();
+        _context.Database.EnsureCreated();
 
         usuario = (Usuario)(_context.Artistas.FirstOrDefault(x => x.UserName == userName) ?? new Usuario());
 

@@ -14,6 +14,12 @@
 2. ejecutar `dotnet ef database drop -f -v`
 3. crear denuevo
 
+# Docker
+1. `docker build -t pablog0/tattoostudiobooking:version1.0 .`
+2. `docker volume create booking-db`
+3. `docker run -dp 127.0.0.1:80:80 --mount type=volume,src=booking-db,target=/etc/studiobooking pablog0/tattoostudiobooking:version1.0 .`
+4. `docker push pablog0/tattoostudiobooking:version1.0`
+
 # Otros
 - como hacer archivo md [comandos]( https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax)
 - hacer [webApi](https://learn.microsoft.com/en-us/aspnet/core/tutorials/first-web-api?view=aspnetcore-8.0&tabs=visual-studio-code)

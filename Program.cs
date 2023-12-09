@@ -3,11 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using TattooStudioBooking;
 
 var builder = WebApplication.CreateBuilder(args);
-
+var dbPath = builder.Configuration.GetValue<string>("dbpath");
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddDbContext<BookingContext>(opt => opt.UseSqlite());
+builder.Services.AddDbContext<BookingContext>(opt => opt.UseSqlite($"Data Source={dbPath}booking.db"));
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
