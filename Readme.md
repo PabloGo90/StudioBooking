@@ -15,10 +15,10 @@
 3. crear denuevo
 
 # Docker
-1. `docker build -t pablog0/tattoostudiobooking:version1.0 .`
+1. `docker build -t pablog0/tattoostudiobooking:version1.1 .`
 2. `docker volume create booking-db`
-3. `docker run -dp 127.0.0.1:80:80 --mount type=volume,src=booking-db,target=/etc/studiobooking pablog0/tattoostudiobooking:version1.0 .`
-4. `docker push pablog0/tattoostudiobooking:version1.0`
+3. `docker run -p 80:80 --mount type=volume,src=booking-db,target=/etc/studiobooking pablog0/tattoostudiobooking:version1.1 .`
+4. `docker push pablog0/tattoostudiobooking:version1.1`
 
 # Otros
 - como hacer archivo md [comandos]( https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax)
